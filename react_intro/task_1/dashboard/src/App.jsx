@@ -1,6 +1,6 @@
 import image3 from './assets/holberton-logo.jpg';
 import './App.css';
-import Notifications from '../../Notification';
+import Notifications from './Notifications';
 
 const App = () => {
   const date = new Date();
