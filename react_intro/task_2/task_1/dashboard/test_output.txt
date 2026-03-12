@@ -1,0 +1,15 @@
+
+> dashboard@0.0.0 test
+> jest
+
+PASS src/App.spec.js
+  App component tests
+    √ renders h1 element with text School dashboard (38 ms)
+    √ renders correct text in App-body and App-footer (3 ms)
+    √ renders an img element with alt text holberton logo (2 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       3 passed, 3 total
+Snapshots:   0 total
+Time:        1.421 s
+Ran all test suites.
