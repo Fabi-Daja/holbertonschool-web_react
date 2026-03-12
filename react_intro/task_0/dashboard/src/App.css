@@ -1,23 +1,14 @@
 .App-header {
+  border-bottom: 2px solid #e1003c;
   display: flex;
   align-items: center;
-  color: #e1003c;
-  border-bottom: 3px solid #e1003c;
-}
-
-.App-header img {
-  width: 200px;
 }
 
 .App-body {
-  padding: 50px;
-  height: 350px;
+  height: 300px;
 }
 
 .App-footer {
-  border-top: 3px solid #e1003c;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  font-style: italic;
+  border-top: 2px solid #e1003c;
+  text-align: center;
 }
