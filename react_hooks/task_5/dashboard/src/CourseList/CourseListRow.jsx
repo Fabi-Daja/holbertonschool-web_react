@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import { memo } from 'react'
 import "./CourseList.css"
 
 const CourseListRow = ({ isHeader = false, textFirstCell = '', textSecondCell = null }) => {

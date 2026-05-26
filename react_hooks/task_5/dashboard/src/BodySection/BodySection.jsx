@@ -1,5 +1,3 @@
-import React from "react";
-
 const BodySection = ({ title, children }) => {
     return (
         <div className="bodySection">
