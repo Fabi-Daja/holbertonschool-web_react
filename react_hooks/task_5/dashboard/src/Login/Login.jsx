@@ -1,7 +1,7 @@
 import useLogin from "../hooks/useLogin";
 import "./Login.css";
 
-const Login = (props) => {
+function Login(props) {
     const {
         email,
         password,
@@ -38,6 +38,6 @@ const Login = (props) => {
             </form>
         </div>
     );
-};
+}
 
 export default Login;
