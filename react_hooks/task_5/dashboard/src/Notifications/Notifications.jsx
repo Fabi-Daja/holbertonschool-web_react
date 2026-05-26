@@ -3,13 +3,13 @@ import closeIcon from "../assets/close-button.png";
 import NotificationItem from "./NotificationItem";
 import "./Notifications.css";
 
-function Notifications({
+const Notifications = ({
     notifications = [],
     displayDrawer = false,
     handleDisplayDrawer,
     handleHideDrawer,
     markNotificationAsRead,
-}) {
+}) => {
     return (
         <div className="notifications-container">
             <div className="notification-title" onClick={handleDisplayDrawer}>
@@ -49,7 +49,7 @@ function Notifications({
             )}
         </div>
     );
-}
+};
 
 function arePropsEqual(prevProps, nextProps) {
     return (
