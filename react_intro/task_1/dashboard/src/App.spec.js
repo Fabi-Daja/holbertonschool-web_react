@@ -1,17 +1,19 @@
 import { render, screen } from "@testing-library/react";
 import App from "./App";
 
-test("renders 'School Dashboard' h1 element", () => {
+
+test("renders h1 with School Dashboard text",  () => {
+    render(<App/>)
+    expect(screen.getByRole('heading')).toHaveTextContent(/School dashboard/i);
+})
+
+test("renders correct text in body and footer paragraphs", () => {
+    render(<App />)
+    expect(screen.getByText(/Login to access the full dashboard/i));
+    expect(screen.getByText(/Copyright/i));
+})
+test("renders an image", () => {
     render(<App />);
-    const titleElement = screen.getByRole("heading", { level: 1, name: /school dashboard/i });
-    expect(titleElement).toBeInTheDocument();
-
-    const bodyText = screen.getByText(/login to access the full dashboard/i);
-    expect(bodyText).toBeInTheDocument();
-
-    const footerText = screen.getByText(/copyright/i);
-    expect(footerText).toBeInTheDocument();
-
-    const imgElement = screen.getByRole("img"); 
-    expect(imgElement).toBeInTheDocument();
+    const image = screen.getByAltText(/holberton logo/i);
+    expect(image).toBeInTheDocument();
 });
