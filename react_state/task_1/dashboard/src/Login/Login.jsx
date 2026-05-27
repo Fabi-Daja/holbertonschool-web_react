@@ -1,94 +1,80 @@
-/* eslint-disable */
-import React, { Component } from "react";
-import "./Login.css";
-import WithLogging from "../HOC/WithLogging";
+import React, { Component } from 'react';
+import './Login.css';
+import WithLogging from '../HOC/WithLogging';
 
 class Login extends Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoggedIn: false,
+      email: '',
+      password: '',
+      enableSubmit: false,
+    };
+    this.handleLoginSubmit = this.handleLoginSubmit.bind(this);
+    this.handleChangeEmail = this.handleChangeEmail.bind(this);
+    this.handleChangePassword = this.handleChangePassword.bind(this);
+  }
 
-        this.state = {
-            isLoggedIn: false,
-            email: "",
-            password: "",
-            enableSubmit: false,
-        };
+  handleLoginSubmit(e) {
+    e.preventDefault();
+    this.setState({ isLoggedIn: true });
+  }
 
-        this.handleLoginSubmit = this.handleLoginSubmit.bind(this);
-        this.handleChangeEmail = this.handleChangeEmail.bind(this);
-        this.handleChangePassword = this.handleChangePassword.bind(this);
-    }
+  validateFields(email, password) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email) && password.length >= 8;
+  }
 
-    validateForm(email, password) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  handleChangeEmail(e) {
+    const email = e.target.value;
+    this.setState((prevState) => ({
+      email,
+      enableSubmit: this.validateFields(email, prevState.password),
+    }));
+  }
 
-        return (
-            emailRegex.test(email) &&
-            password.length >= 8
-        );
-    }
+  handleChangePassword(e) {
+    const password = e.target.value;
+    this.setState((prevState) => ({
+      password,
+      enableSubmit: this.validateFields(prevState.email, password),
+    }));
+  }
 
-    handleChangeEmail(e) {
-        const email = e.target.value;
+  render() {
+    const { email, password, enableSubmit } = this.state;
 
-        this.setState((prevState) => ({
-            email,
-            enableSubmit: this.validateForm(email, prevState.password),
-        }));
-    }
-
-    handleChangePassword(e) {
-        const password = e.target.value;
-
-        this.setState((prevState) => ({
-            password,
-            enableSubmit: this.validateForm(prevState.email, password),
-        }));
-    }
-
-    handleLoginSubmit(e) {
-        e.preventDefault(); // prevent page reload
-
-        this.setState({
-            isLoggedIn: true,
-        });
-    }
-
-    render() {
-        const { email, password, enableSubmit } = this.state;
-
-        return (
-            <div className="App-body">
-                <p>Login to access the full dashboard</p>
-
-                <form onSubmit={this.handleLoginSubmit}>
-                    <label htmlFor="email">Email</label>
-                    <input
-                        type="text"
-                        id="email"
-                        name="email"
-                        value={email}
-                        onChange={this.handleChangeEmail}
-                    />
-
-                    <label htmlFor="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        value={password}
-                        onChange={this.handleChangePassword}
-                    />
-
-                    <input
-                        type="submit"
-                        value="OK"
-                        disabled={!enableSubmit}
-                    />
-                </form>
-            </div>
-        );
-    }
+    return (
+      <div className='App-body'>
+        <p>Login to access the full dashboard</p>
+        <form onSubmit={this.handleLoginSubmit}>
+          <label htmlFor="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={this.handleChangeEmail}
+          />
+          <label htmlFor="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={this.handleChangePassword}
+          />
+          <button
+            type="submit"
+            disabled={!enableSubmit}
+          >
+            OK
+          </button>
+        </form>
+      </div>
+    );
+  }
 }
 
-export default WithLogging(Login);
+const LoginWithLogging = WithLogging(Login);
+
+export default LoginWithLogging;

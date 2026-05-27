@@ -1,16 +1,16 @@
-.Notifications {
-    border: 2px dashed red;
-    padding: 24px;
+.notification-items{
+    border: 2px dotted #e1003c;
+    padding: 5px;
+    overflow: hidden;
+}
+.notification-items button {
+  float: right;
 }
 
-.Notifications ul {
-    padding-left: 20px;
+[data-priority="default"] {
+  color: blue;
 }
 
-.Notifications ul li[data-priority="default"] {
-    color: blue;
-}
-
-.Notifications ul li[data-priority="urgent"] {
-    color: red;
+[data-priority="urgent"] {
+  color: red;
 }

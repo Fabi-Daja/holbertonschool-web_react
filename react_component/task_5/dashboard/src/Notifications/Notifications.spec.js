@@ -1,73 +1,65 @@
-import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
-import Notifications from "./Notifications";
+import React from 'react';
+import { render, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import Notifications from './Notifications';
 
-describe("Notifications Component", () => {
+const notifications = [
+  { id: 1, type: 'default', value: 'New course available' },
+  { id: 2, type: 'urgent', value: 'New resume available' },
+];
 
-    it("logs message when notification is clicked", () => {
+test('clicking notification logs correct message', () => {
+  const consoleSpy = jest.spyOn(console, 'log');
+  const { container } = render(
+    <Notifications displayDrawer={true} notifications={notifications} />
+  );
 
-        const notifications = [
-            { id: 1, type: "default", value: "New course available" },
-        ];
+  const lis = container.querySelectorAll('li');
 
-        const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => { });
+  fireEvent.click(lis[0]);
+  expect(consoleSpy).toHaveBeenCalledWith(
+    'Notification 1 has been marked as read'
+  );
 
-        render(
-            <Notifications notifications={notifications} displayDrawer={true} />
-        );
+  fireEvent.click(lis[1]);
+  expect(consoleSpy).toHaveBeenCalledWith(
+    'Notification 2 has been marked as read'
+  );
 
-        const listItem = screen.getByText("New course available");
+  consoleSpy.mockRestore();
+});
 
-        fireEvent.click(listItem);
+test('does not re-render if notifications length stays the same', () => {
+  const { rerender, queryByText } = render(
+    <Notifications displayDrawer={true} notifications={notifications} />
+  );
 
-        expect(consoleSpy).toHaveBeenCalledWith(
-            "Notification 1 has been marked as read"
-        );
+  const newNotifications = [
+    { id: 3, type: 'default', value: 'Test 1' },
+    { id: 4, type: 'urgent', value: 'Test 2' },
+  ];
 
-        consoleSpy.mockRestore();
-    });
+  rerender(
+    <Notifications displayDrawer={true} notifications={newNotifications} />
+  );
 
-    it("does not re-render if notifications length stays the same", () => {
+  // Should NOT update → old content still exists
+  expect(queryByText('New course available')).toBeInTheDocument();
+});
 
-        const notifications = [
-            { id: 1, type: "default", value: "Notification 1" },
-        ];
+test('re-renders if notifications length changes', () => {
+  const { rerender, queryByText } = render(
+    <Notifications displayDrawer={true} notifications={notifications} />
+  );
 
-        const { rerender } = render(
-            <Notifications notifications={notifications} displayDrawer={true} />
-        );
+  const newNotifications = [
+    ...notifications,
+    { id: 3, type: 'default', value: 'New notification' },
+  ];
 
-        const updatedNotifications = [
-            { id: 1, type: "default", value: "Updated Notification 1" },
-        ];
+  rerender(
+    <Notifications displayDrawer={true} notifications={newNotifications} />
+  );
 
-        rerender(
-            <Notifications notifications={updatedNotifications} displayDrawer={true} />
-        );
-
-        expect(screen.queryByText("Updated Notification 1")).not.toBeInTheDocument();
-    });
-
-    it("re-renders if notifications length increases", () => {
-
-        const notifications = [
-            { id: 1, type: "default", value: "Notification 1" },
-        ];
-
-        const { rerender } = render(
-            <Notifications notifications={notifications} displayDrawer={true} />
-        );
-
-        const updatedNotifications = [
-            { id: 1, type: "default", value: "Notification 1" },
-            { id: 2, type: "urgent", value: "Notification 2" },
-        ];
-
-        rerender(
-            <Notifications notifications={updatedNotifications} displayDrawer={true} />
-        );
-
-        expect(screen.getByText("Notification 2")).toBeInTheDocument();
-    });
-
+  expect(queryByText('New notification')).toBeInTheDocument();
 });

@@ -43,22 +43,12 @@ function logDevelopmentError(error) {
   }
 }
 
-const notificationsList = [
-  { id: 1, type: "default", value: "New course available" },
-  { id: 2, type: "urgent", value: "New resume available" },
-  {
-    id: 3,
-    type: "urgent",
-    html: { __html: getLatestNotification() },
-  },
-];
-
-function App() {
+const App = () => {
   const { user: contextUser } = useContext(AppContext);
   const removedNotificationIdsRef = useRef(new Set());
   const [displayDrawer, setDisplayDrawer] = useState(true);
   const [user, setUser] = useState(contextUser);
-  const [notifications, setNotifications] = useState(notificationsList);
+  const [notifications, setNotifications] = useState([]);
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
@@ -170,6 +160,6 @@ function App() {
       <Footer />
     </AppContext.Provider>
   );
-}
+};
 
 export default App;

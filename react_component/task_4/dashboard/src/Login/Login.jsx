@@ -1,23 +1,23 @@
-/* eslint-disable */
-import React from "react";
-import "./Login.css";
-import WithLogging from "../HOC/WithLogging";
+import React from 'react';
+import './Login.css';
+import WithLogging from '../HOC/WithLogging';
 
-function Login() {
-    return (
-        <div className="App-body">
-            <p>Login to access the full dashboard</p>
-            <form>
-                <label htmlFor="email">Email</label>
-                <input type="text" id="email" name="email" />
+const Login = () => {
+  return (
+    <div className="App-body">
+      <p>Login to access the full dashboard</p>
 
-                <label htmlFor="password">Password</label>
-                <input type="password" id="password" name="password" />
+      <label htmlFor="email">Email:</label>
+      <input type="email" id="email" autoComplete="username" />
 
-                <button>OK</button>
-            </form>
-        </div>
-    );
-}
+      <label htmlFor="password">Password:</label>
+      <input type="password" id="password" autoComplete="current-password" />
 
-export default WithLogging(Login);
+      <button type="submit">OK</button>
+    </div>
+  );
+};
+
+
+const LoginWithLogging = WithLogging(Login);
+export default Login;

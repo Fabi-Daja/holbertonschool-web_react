@@ -1,75 +1,126 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import App from "./App";
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
+import App from './App';
 
-describe("App Component", () => {
-    beforeEach(() => {
-        render(<App />);
-    });
+describe('App component', () => {
+  test('renders notifications', () => {
+    render(<App />);
+    expect(screen.getByText(/Your notifications/i)).toBeInTheDocument();
+  });
 
-    it("Renders Header component", () => {
-        expect(screen.getByRole("heading", { name: /school dashboard/i })).toBeInTheDocument();
-    });
+  test('renders Header component', () => {
+    render(<App />);
+    expect(screen.getByText(/School dashboard/i)).toBeInTheDocument();
+  });
 
-    it("Renders Login Component", () => {
-        expect(screen.getByText(/Log in to continue/i)).toBeInTheDocument();
-    });
+  test('renders Login when not logged in by default', () => {
+    render(<App />);
+    expect(screen.getByText(/Log in to continue/i)).toBeInTheDocument();
+  });
 
-    it("Renders Footer Component", () => {
-        expect(screen.getByText(/Copyright/i)).toBeInTheDocument();
-    });
+  test('renders CourseList after logging in via state', async () => {
+    render(<App />);
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/password/i);
+    const submitBtn = screen.getByRole('button', { name: /ok/i });
 
-    it("Login is rendered when user is not logged in", () => {
-        cleanup();
-        const { container } = render(<App />);
-        expect(container.querySelector(".App-body")).toBeInTheDocument();
-    });
+    await userEvent.type(emailInput, 'user@example.com');
+    await userEvent.type(passwordInput, 'validpassword123');
+    await userEvent.click(submitBtn);
 
-    it("CourseList is rendered after successful login", async () => {
-        cleanup();
-        render(<App />);
-        const email = screen.getByLabelText(/Email/i);
-        const password = screen.getByLabelText(/Password/i);
-        const button = screen.getByRole("button");
+    expect(screen.getByText(/ES6/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Log in to continue/i)).not.toBeInTheDocument();
+  });
 
-        await userEvent.type(email, "test@test.com");
-        await userEvent.type(password, "password123");
-        await userEvent.click(button);
+  test('shows logoutSection in header after logging in', async () => {
+    render(<App />);
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/password/i);
+    const submitBtn = screen.getByRole('button', { name: /ok/i });
 
-        expect(screen.getByText(/Course list/i)).toBeInTheDocument();
-    });
+    await userEvent.type(emailInput, 'user@example.com');
+    await userEvent.type(passwordInput, 'validpassword123');
+    await userEvent.click(submitBtn);
 
-    it("returns to Login after logout", async () => {
-        cleanup();
-        render(<App />);
-        const email = screen.getByLabelText(/Email/i);
-        const password = screen.getByLabelText(/Password/i);
-        const button = screen.getByRole("button");
+    expect(document.getElementById('logoutSection')).toBeInTheDocument();
+    expect(screen.getByText(/Welcome user@example.com/i)).toBeInTheDocument();
+  });
 
-        await userEvent.type(email, "test@test.com");
-        await userEvent.type(password, "password123");
-        await userEvent.click(button);
+  test('clicking logout link logs the user out and shows Login again', async () => {
+    render(<App />);
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/password/i);
+    const submitBtn = screen.getByRole('button', { name: /ok/i });
 
-        const logoutLink = screen.getByText(/logout/i);
-        await userEvent.click(logoutLink);
+    await userEvent.type(emailInput, 'user@example.com');
+    await userEvent.type(passwordInput, 'validpassword123');
+    await userEvent.click(submitBtn);
 
-        expect(screen.getByText(/Log in to continue/i)).toBeInTheDocument();
-    });
+    expect(screen.getByText(/ES6/i)).toBeInTheDocument();
 
-    it("removes notification when clicked and logs to console", async () => {
-        cleanup();
-        const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => { });
-        render(<App />);
+    fireEvent.click(screen.getByText(/logout/i));
 
-        const notificationTitle = screen.getByText("Your notifications");
-        await userEvent.click(notificationTitle);
+    expect(screen.queryByText(/ES6/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Log in to continue/i)).toBeInTheDocument();
+    expect(document.getElementById('logoutSection')).toBeNull();
+  });
 
-        const notification = screen.getByText("New course available");
-        await userEvent.click(notification);
+  test('logs out when Ctrl+h is pressed', () => {
+    window.alert = jest.fn();
+    render(<App />);
+    fireEvent.keyDown(window, { key: 'h', ctrlKey: true });
+    expect(window.alert).toHaveBeenCalledWith('Logging you out');
+  });
 
-        expect(screen.queryByText("New course available")).not.toBeInTheDocument();
-        expect(consoleSpy).toHaveBeenCalledWith("Notification 1 has been marked as read");
+  test('renders News from the School section with paragraph', () => {
+    render(<App />);
+    const heading = screen.getByRole('heading', { level: 2, name: /News from the School/i });
+    const paragraph = screen.getByText(/Holberton School News goes here/i);
+    expect(heading).toBeInTheDocument();
+    expect(paragraph).toBeInTheDocument();
+  });
 
-        consoleSpy.mockRestore();
-    });
+  test('displayDrawer is false by default', () => {
+    render(<App />);
+    expect(screen.queryByText(/Here is the list of notifications/i)).not.toBeInTheDocument();
+  });
+
+  test('clicking "Your notifications" shows the drawer', () => {
+    render(<App />);
+    fireEvent.click(screen.getByText(/Your notifications/i));
+    expect(screen.getByText(/Here is the list of notifications/i)).toBeInTheDocument();
+  });
+
+  test('clicking close button hides the drawer', () => {
+    render(<App />);
+    fireEvent.click(screen.getByText(/Your notifications/i));
+    expect(screen.getByText(/Here is the list of notifications/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText(/Close/i));
+    expect(screen.queryByText(/Here is the list of notifications/i)).not.toBeInTheDocument();
+  });
+
+  test('clicking a notification removes it from the list and logs the correct string', () => {
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const { container } = render(<App />);
+
+    // Open the drawer
+    fireEvent.click(screen.getByText(/Your notifications/i));
+
+    const lisBeforeClick = container.querySelectorAll('.Notifications li');
+    const initialCount = lisBeforeClick.length;
+
+    // Click the first notification (id: 1)
+    fireEvent.click(lisBeforeClick[0]);
+
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Notification 1 has been marked as read'
+    );
+
+    const lisAfterClick = container.querySelectorAll('.Notifications li');
+    expect(lisAfterClick.length).toBe(initialCount - 1);
+
+    consoleSpy.mockRestore();
+  });
 });

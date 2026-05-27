@@ -1,5 +1,4 @@
-/* eslint-disable */
-import { Fragment } from 'react';
+import React, { Fragment } from 'react';
 import Notifications from '../Notifications/Notifications';
 import Header from '../Header/Header';
 import Login from '../Login/Login';
@@ -8,14 +7,12 @@ import './App.css'
 
 function App() {
   return (
-    <>
-      <div className="root-notifications">
-        <Notifications />
-      </div>
+    <Fragment>
+      <Notifications />
       <Header />
       <Login />
       <Footer />
-    </>
+    </Fragment>
   );
 }
 

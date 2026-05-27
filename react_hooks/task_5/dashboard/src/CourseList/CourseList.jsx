@@ -1,4 +1,4 @@
-
+import React from "react";
 import "./CourseList.css";
 import CourseListRow from "./CourseListRow";
 

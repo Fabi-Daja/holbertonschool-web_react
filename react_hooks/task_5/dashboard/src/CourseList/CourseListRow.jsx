@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import React from 'react'
 import "./CourseList.css"
 
 const CourseListRow = ({ isHeader = false, textFirstCell = '', textSecondCell = null }) => {
@@ -23,4 +23,4 @@ const CourseListRow = ({ isHeader = false, textFirstCell = '', textSecondCell = 
     )
 }
 
-export default memo(CourseListRow)
+export default CourseListRow

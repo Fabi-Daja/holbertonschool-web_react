@@ -1,104 +1,95 @@
-import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
-import Notifications from "./Notifications";
+import React from 'react';
+import { render, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import Notifications from './Notifications';
 
-describe("Notifications Component", () => {
+const notifications = [
+  { id: 1, type: 'default', value: 'New course available' },
+  { id: 2, type: 'urgent', value: 'New resume available' },
+];
 
-    it("logs message when notification is clicked", () => {
-        const notifications = [
-            { id: 1, type: "default", value: "New course available" },
-        ];
+test('clicking notification logs correct message', () => {
+  const consoleSpy = jest.spyOn(console, 'log');
+  const { container } = render(
+    <Notifications displayDrawer={true} notifications={notifications} />
+  );
 
-        const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => { });
+  const lis = container.querySelectorAll('li');
 
-        render(
-            <Notifications notifications={notifications} displayDrawer={true} />
-        );
+  fireEvent.click(lis[0]);
+  expect(consoleSpy).toHaveBeenCalledWith(
+    'Notification 1 has been marked as read'
+  );
 
-        const listItem = screen.getByText("New course available");
-        fireEvent.click(listItem);
+  fireEvent.click(lis[1]);
+  expect(consoleSpy).toHaveBeenCalledWith(
+    'Notification 2 has been marked as read'
+  );
 
-        expect(consoleSpy).toHaveBeenCalledWith(
-            "Notification 1 has been marked as read"
-        );
+  consoleSpy.mockRestore();
+});
 
-        consoleSpy.mockRestore();
-    });
+test('does not re-render if notifications length stays the same', () => {
+  const { rerender, queryByText } = render(
+    <Notifications displayDrawer={true} notifications={notifications} />
+  );
 
-    it("does not re-render if notifications length stays the same", () => {
-        const notifications = [
-            { id: 1, type: "default", value: "Notification 1" },
-        ];
+  const newNotifications = [
+    { id: 3, type: 'default', value: 'Test 1' },
+    { id: 4, type: 'urgent', value: 'Test 2' },
+  ];
 
-        const { rerender } = render(
-            <Notifications notifications={notifications} displayDrawer={true} />
-        );
+  rerender(
+    <Notifications displayDrawer={true} notifications={newNotifications} />
+  );
 
-        const updatedNotifications = [
-            { id: 1, type: "default", value: "Updated Notification 1" },
-        ];
+  // Should NOT update → old content still exists
+  expect(queryByText('New course available')).toBeInTheDocument();
+});
 
-        rerender(
-            <Notifications notifications={updatedNotifications} displayDrawer={true} />
-        );
+test('re-renders if notifications length changes', () => {
+  const { rerender, queryByText } = render(
+    <Notifications displayDrawer={true} notifications={notifications} />
+  );
 
-        expect(
-            screen.queryByText("Updated Notification 1")
-        ).not.toBeInTheDocument();
-    });
+  const newNotifications = [
+    ...notifications,
+    { id: 3, type: 'default', value: 'New notification' },
+  ];
 
-    it("re-renders if notifications length increases", () => {
-        const notifications = [
-            { id: 1, type: "default", value: "Notification 1" },
-        ];
+  rerender(
+    <Notifications displayDrawer={true} notifications={newNotifications} />
+  );
 
-        const { rerender } = render(
-            <Notifications notifications={notifications} displayDrawer={true} />
-        );
+  expect(queryByText('New notification')).toBeInTheDocument();
+});
 
-        const updatedNotifications = [
-            { id: 1, type: "default", value: "Notification 1" },
-            { id: 2, type: "urgent", value: "Notification 2" },
-        ];
+test('clicking on "Your notifications" calls handleDisplayDrawer', () => {
+  const handleDisplayDrawer = jest.fn();
+  const { getByText } = render(
+    <Notifications
+      displayDrawer={false}
+      notifications={notifications}
+      handleDisplayDrawer={handleDisplayDrawer}
+      handleHideDrawer={jest.fn()}
+    />
+  );
 
-        rerender(
-            <Notifications notifications={updatedNotifications} displayDrawer={true} />
-        );
+  fireEvent.click(getByText(/Your notifications/i));
+  expect(handleDisplayDrawer).toHaveBeenCalledTimes(1);
+});
 
-        expect(screen.getByText("Notification 2")).toBeInTheDocument();
-    });
+test('clicking on the close button calls handleHideDrawer', () => {
+  const handleHideDrawer = jest.fn();
+  const { getByLabelText } = render(
+    <Notifications
+      displayDrawer={true}
+      notifications={notifications}
+      handleDisplayDrawer={jest.fn()}
+      handleHideDrawer={handleHideDrawer}
+    />
+  );
 
-    it("calls handleDisplayDrawer when clicking on menu item", () => {
-        const handleDisplayDrawer = jest.fn();
-
-        render(
-            <Notifications
-                notifications={[]}
-                displayDrawer={false}
-                handleDisplayDrawer={handleDisplayDrawer}
-            />
-        );
-
-        const menuItem = screen.getByText("Your notifications");
-        fireEvent.click(menuItem);
-
-        expect(handleDisplayDrawer).toHaveBeenCalled();
-    });
-
-    it("calls handleHideDrawer when clicking on close button", () => {
-        const handleHideDrawer = jest.fn();
-
-        render(
-            <Notifications
-                notifications={[{ id: 1, type: "default", value: "Test" }]}
-                displayDrawer={true}
-                handleHideDrawer={handleHideDrawer}
-            />
-        );
-
-        const button = screen.getByRole("button", { name: /close/i });
-        fireEvent.click(button);
-
-        expect(handleHideDrawer).toHaveBeenCalled();
-    });
+  fireEvent.click(getByLabelText(/Close/i));
+  expect(handleHideDrawer).toHaveBeenCalledTimes(1);
 });

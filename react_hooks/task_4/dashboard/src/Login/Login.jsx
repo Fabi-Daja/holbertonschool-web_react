@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./Login.css";
 
-const Login = (props) => {
+function Login(props) {
     const [enableSubmit, setEnableSubmit] = useState(false);
     const [formData, setFormData] = useState({ email: "", password: "" });
 
@@ -72,6 +72,6 @@ const Login = (props) => {
             </form>
         </div>
     );
-};
+}
 
 export default Login;

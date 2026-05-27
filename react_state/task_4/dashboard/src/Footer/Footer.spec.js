@@ -1,44 +1,35 @@
-import { render, screen } from "@testing-library/react";
-import Footer from "./Footer";
-import AppContext from "../Context/context";
-import { getCurrentYear } from "../utils/utils";
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import Footer from './Footer';
+import NewContext from '../Context/context';
 
-describe("Footer Component", () => {
-    it("renders copyright", () => {
-        const year = getCurrentYear();
-        render(<Footer />);
-        expect(
-            screen.getByText(`Copyright ${year} - Holberton School`, {
-                exact: false,
-            })
-        ).toBeInTheDocument();
-    });
+// Helper: render Footer with a given user value via context
+const renderWithContext = (user) =>
+  render(
+    <NewContext.Provider value={{ user }}>
+      <Footer />
+    </NewContext.Provider>
+  );
 
-    it("does NOT display contact link when logged out", () => {
-        const contextValue = {
-            user: { isLoggedIn: false },
-        };
-        render(
-            <AppContext.Provider value={contextValue}>
-                <Footer />
-            </AppContext.Provider>
-        );
-        expect(screen.queryByText(/Contact us/i)).not.toBeInTheDocument();
-    });
+test('renders Footer without crashing', () => {
+  renderWithContext({ isLoggedIn: false });
+});
 
-    it("displays contact link when logged in", () => {
-        const contextValue = {
-            user: {
-                email: "test@test.com",
-                password: "password123",
-                isLoggedIn: true,
-            },
-        };
-        render(
-            <AppContext.Provider value={contextValue}>
-                <Footer />
-            </AppContext.Provider>
-        );
-        expect(screen.getByText(/Contact us/i)).toBeInTheDocument();
-    });
+test('renders correct copyright text', () => {
+  renderWithContext({ isLoggedIn: false });
+  const year = new Date().getFullYear();
+  expect(
+    screen.getByText(`Copyright ${year} - Holberton School`)
+  ).toBeInTheDocument();
+});
+
+test('does not display "Contact us" link when user is logged out', () => {
+  renderWithContext({ isLoggedIn: false });
+  expect(screen.queryByText(/Contact us/i)).not.toBeInTheDocument();
+});
+
+test('displays "Contact us" link when user is logged in', () => {
+  renderWithContext({ isLoggedIn: true });
+  expect(screen.getByText(/Contact us/i)).toBeInTheDocument();
 });

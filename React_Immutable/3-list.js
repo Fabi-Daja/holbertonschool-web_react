@@ -1,16 +1,9 @@
-const { List } = require('immutable');
+import { List } from 'immutable';
 
- function getListObject(array) {
-    console.log("el", List(array))
-    return List(array);
-  
+export function getListObject(array) {
+  return List(array);
 }
 
-function addElementToList(list, element) {
-    console.log("el", list.push(element))
-    return list.push(element);
+export function addElementToList(list, element) {
+  return list.push(element);
 }
-module.exports = {
-    getListObject,
-    addElementToList,
-};

@@ -1,7 +1,6 @@
-const { Map, fromJS } = require('immutable');
+/* eslint-disable */
+import { Map } from 'immutable';
 
-function mergeDeeplyElements(page1, page2) {
-    return Map(fromJS(page1).mergeDeep(fromJS(page2)));
+export default function mergeDeeplyElements(page1, page2) {
+  return Map(page1).mergeDeep(Map(page2));
 }
-
-module.exports = mergeDeeplyElements;

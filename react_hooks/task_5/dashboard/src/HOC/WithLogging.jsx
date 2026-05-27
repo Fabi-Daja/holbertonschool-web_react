@@ -1,4 +1,5 @@
-import { Component } from 'react';
+/* eslint-disable */
+import React from "react";
 
 function WithLogging(WrappedComponent) {
     const wrappedName =
@@ -6,7 +7,7 @@ function WithLogging(WrappedComponent) {
         WrappedComponent.name ||
         "Component";
 
-    class WithLoggingComponent extends Component {
+    class WithLoggingComponent extends React.Component {
         render() {
             return <WrappedComponent {...this.props} />;
         }

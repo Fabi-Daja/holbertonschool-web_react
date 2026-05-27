@@ -1,53 +1,43 @@
-/* eslint-disable */
-import closeIcon from "../assets/close-button.png";
-import NotificationItem from "./NotificationItem";
-import "./Notifications.css";
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
 
-const Notifications = ({ notifications, displayDrawer }) => {
+class NotificationItem extends PureComponent {
+  render() {
+    const { id, type, value, html, markAsRead } = this.props;
 
-    const markAsRead = (id) => {
-        console.log(`Notification ${id} has been marked as read`);
-    };
+    if (html) {
+      return (
+        <li
+          data-notification-type={type}
+          dangerouslySetInnerHTML={html}
+          onClick={() => markAsRead(id)}
+        />
+      );
+    }
 
     return (
-        <div className="notifications-container">
-            <div className="notification-title">Your notifications</div>
-
-            {displayDrawer && (
-                <div className="notification-items">
-                    {notifications.length > 0 ? (
-                        <>
-                            <p>Here is the list of notifications</p>
-                            <ul>
-                                {notifications.map((notification) => (
-                                    <NotificationItem
-                                        key={notification.id}
-                                        id={notification.id}
-                                        type={notification.type}
-                                        html={notification.html}
-                                        value={notification.value}
-                                        markAsRead={markAsRead}
-                                    />
-                                ))}
-                            </ul>
-                        </>
-                    ) : (
-                        <p>No new notification for now</p>
-                    )}
-
-                    <button
-                        aria-label="Close"
-                        onClick={() =>
-                            console.log("Close button has been clicked")
-                        }
-                        className="close-button"
-                    >
-                        <img alt="Close Button" src={closeIcon} />
-                    </button>
-                </div>
-            )}
-        </div>
+      <li
+        data-notification-type={type}
+        onClick={() => markAsRead(id)}
+      >
+        {value}
+      </li>
     );
+  }
 }
 
-export default Notifications;
+NotificationItem.propTypes = {
+  id: PropTypes.number,
+  type: PropTypes.string,
+  value: PropTypes.string,
+  html: PropTypes.shape({ __html: PropTypes.string }),
+  markAsRead: PropTypes.func,
+};
+
+NotificationItem.defaultProps = {
+  id: 0,
+  type: 'default',
+  markAsRead: () => {},
+};
+
+export default NotificationItem;

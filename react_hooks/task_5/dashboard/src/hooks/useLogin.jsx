@@ -6,7 +6,7 @@ const useLogin = (onLogin) => {
     const [enableSubmit, setEnableSubmit] = useState(false);
 
     const validateForm = (currentEmail, currentPassword) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+.[^\s@]+$/;
         return emailRegex.test(currentEmail) && currentPassword.length >= 8;
     };
 

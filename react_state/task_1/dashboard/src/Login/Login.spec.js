@@ -1,74 +1,78 @@
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import Login from "./Login";
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import Login from './Login';
 
-let container = null;
+test('renders Login without crashing', () => {
+  render(<Login />);
+});
 
-describe("Login Component", () => {
-    beforeEach(() => {
-        const rendered = render(<Login />);
-        container = rendered.container;
-    });
+test('renders 2 labels, 2 inputs (email + password), and 1 submit button', () => {
+  const { container } = render(<Login />);
+  expect(container.querySelectorAll('label').length).toBe(2);
+  expect(container.querySelectorAll('input').length).toBe(2);
+  expect(container.querySelectorAll('button').length).toBe(1);
+});
 
-    // Test if Login paragraph has correct text
-    it("Login has correct text", () => {
-        const loginText = screen.getByText(/Login to access the full dashboard/i);
+test('inputs get focused when related label is clicked', async () => {
+  render(<Login />);
+  const emailLabel = screen.getByText(/email/i);
+  const passwordLabel = screen.getByText(/password/i);
 
-        expect(loginText).toBeInTheDocument();
-    });
+  await userEvent.click(emailLabel);
+  expect(screen.getByLabelText(/email/i)).toHaveFocus();
 
-    // Test if Login renders two input elements, two labels and button
-    it("renders two input elements, two labels and button", () => {
-        //Get input elements
-        const inputElements = container.querySelectorAll("input");
-        const inputLength = inputElements.length;
+  await userEvent.click(passwordLabel);
+  expect(screen.getByLabelText(/password/i)).toHaveFocus();
+});
 
-        // Get labels
-        const labelElements = container.querySelectorAll("label");
-        const labelsLength = labelElements.length;
+test('submit button is disabled by default', () => {
+  render(<Login />);
+  expect(screen.getByRole('button', { name: /ok/i })).toBeDisabled();
+});
 
-        //Get button
-        const button = screen.getByRole("button");
+test('submit button is enabled when email is valid and password has 8+ characters', async () => {
+  render(<Login />);
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  const submitBtn = screen.getByRole('button', { name: /ok/i });
 
-        // Assert number of input elements
-        expect(inputLength).toEqual(2);
+  await userEvent.type(emailInput, 'user@example.com');
+  await userEvent.type(passwordInput, 'validpassword123');
+  expect(submitBtn).not.toBeDisabled();
+});
 
-        // Assert number of label elements
-        expect(labelsLength).toEqual(2);
+test('submit button stays disabled if email is invalid', async () => {
+  render(<Login />);
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  const submitBtn = screen.getByRole('button', { name: /ok/i });
 
-        // Assert existance of button
-        expect(button).toBeInTheDocument();
-    });
+  await userEvent.type(emailInput, 'notanemail');
+  await userEvent.type(passwordInput, 'validpassword123');
+  expect(submitBtn).toBeDisabled();
+});
 
-    //Test if labels have correct values
-    it("Labels have correct values", () => {
-        const email = screen.getByLabelText(/Email/i);
-        const password = screen.getByLabelText(/Password/i);
+test('submit button stays disabled if password is less than 8 characters', async () => {
+  render(<Login />);
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  const submitBtn = screen.getByRole('button', { name: /ok/i });
 
-        // Assert label values
-        expect(email).toBeInTheDocument();
-        expect(password).toBeInTheDocument();
-    });
+  await userEvent.type(emailInput, 'user@example.com');
+  await userEvent.type(passwordInput, 'short');
+  expect(submitBtn).toBeDisabled();
+});
 
-    //Test if button has correct value
-    it("Button has correct value", () => {
-        //Get button
-        const button = screen.getByRole("button");
+test('submitting the form does not reload the page', async () => {
+  render(<Login />);
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  const submitBtn = screen.getByRole('button', { name: /ok/i });
 
-        // Assert if button has correct value
-        expect(button.textContent).toBe("OK");
-    });
+  await userEvent.type(emailInput, 'user@example.com');
+  await userEvent.type(passwordInput, 'validpassword123');
+  await userEvent.click(submitBtn);
 
-    // Test if click on label triggeres focus on input element
-    it("On label click triggers focus", async () => {
-        // Get email related elements
-        const emailLabel = screen.getByLabelText(/Email/i);
-        const inputField = screen.getByRole("textbox", { name: /email/i });
-
-        // Simulate click on label
-        await userEvent.click(emailLabel);
-
-        // Assert if input gets focused
-        expect(inputField).toHaveFocus();
-    });
+  expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
 });

@@ -1,42 +1,44 @@
-/* eslint-disable */
-import React from "react";
-import "./CourseList.css";
-import CourseListRow from "./CourseListRow";
-import WithLogging from "../HOC/WithLogging";
+import React from 'react';
+import PropTypes from 'prop-types';
+import CourseListRow from './CourseListRow';
+import './CourseList.css';
+import WithLogging from '../HOC/WithLogging';
 
 const CourseList = ({ courses = [] }) => {
-    return (
-        <table id={"CourseList"} className="course-list">
-            {courses.length > 0 ? (
-                <>
-                    <thead>
-                        <CourseListRow isHeader={true} textFirstCell={"Available courses"} />
-                        <CourseListRow
-                            isHeader={true}
-                            textFirstCell={"Course Name"}
-                            textSecondCell="Credit"
-                        />
-                    </thead>
-
-                    <tbody>
-                        {courses.map((course) => (
-                            <CourseListRow
-                                key={course.id}
-                                textFirstCell={course.name}
-                                textSecondCell={course.credit}
-                            />
-                        ))}
-                    </tbody>
-                </>
-            ) : (
-                <tbody className="no-courses">
-                    <tr>
-                        <td>No course available yet</td>
-                    </tr>
-                </tbody>
-            )}
-        </table>
-    );
+  return (
+    <table id="CourseList">
+      <thead>
+        <CourseListRow textFirstCell="Available courses" isHeader={true} />
+        <CourseListRow textFirstCell="Course name" textSecondCell="Credit" isHeader={true} />
+      </thead>
+      <tbody>
+        {courses.length === 0 ? (
+          <CourseListRow isHeader={false} textFirstCell="No course available yet" />
+        ) : (
+          courses.map((course) => (
+            <CourseListRow
+              key={course.id}
+              isHeader={false}
+              textFirstCell={course.name}
+              textSecondCell={String(course.credit)}
+            />
+          ))
+        )}
+      </tbody>
+    </table>
+  );
 };
 
-export default WithLogging(CourseList);
+const CourseListWithLogging = WithLogging(CourseList);
+
+// CourseList.propTypes = {
+//   courses: PropTypes.arrayOf(
+//     PropTypes.shape({
+//       id: PropTypes.number.isRequired,
+//       name: PropTypes.string.isRequired,
+//       credit: PropTypes.number.isRequired,
+//     })
+//   ),
+// };
+
+export default CourseList;

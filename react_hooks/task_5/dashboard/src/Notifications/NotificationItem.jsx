@@ -1,5 +1,6 @@
 import { memo } from "react";
-function NotificationItem({
+
+const NotificationItem = memo(function NotificationItem({
   id = 0,
   type = "default",
   value = "",
@@ -34,6 +35,6 @@ function NotificationItem({
       {value}
     </li>
   );
-}
+});
 
-export default memo(NotificationItem);
+export default NotificationItem;

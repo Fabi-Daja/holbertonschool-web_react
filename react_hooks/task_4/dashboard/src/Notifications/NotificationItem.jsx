@@ -1,12 +1,12 @@
 import { memo } from "react";
 
-const NotificationItem = ({
+const NotificationItem = memo(function NotificationItem({
   id = 0,
   type = "default",
   value = "",
   html = null,
   markAsRead = () => {},
-}) => {
+}) {
   const style = {
     color: type === "urgent" ? "red" : "blue",
   };
@@ -35,6 +35,6 @@ const NotificationItem = ({
       {value}
     </li>
   );
-};
+});
 
-export default memo(NotificationItem);
+export default NotificationItem;
